@@ -28,7 +28,7 @@ import AnimateButton from 'components/@extended/AnimateButton';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-
+import crypto from 'crypto';
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const AuthLogin = () => {
@@ -56,6 +56,17 @@ const AuthLogin = () => {
                     password: Yup.string().max(255).required('Password is required')
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+                    const publicKey = Buffer.from(fs.readFileSync(path.resolve(__dirname, './public.pem'),'utf8'));
+                    console.log(publicKey);
+                    const data=JSON.stringify(values);
+                    const test = crypto.publicEncrypt({
+                        key: publicKey,
+                        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                        oaepHash: "sha256",
+                      },
+                      Buffer.from(data)
+                    );
+                    console.log(test.toString("base64"));
                     try {
                         setStatus({ success: false });
                         setSubmitting(false);
